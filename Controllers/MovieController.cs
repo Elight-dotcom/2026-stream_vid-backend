@@ -49,6 +49,24 @@ public class MovieController : ControllerBase
         }
     }
 
+    [HttpPut("{id}")]
+    public async Task<ActionResult<GetMovieDto>> UpdateMovie(int id, NewMovieDto updatedMovie)
+    {
+        try
+        {
+            var movie = await _movieService.UpdateMovie(id, updatedMovie);
+            if (movie == null)
+            {
+                return NotFound();
+            }
+            return Ok(movie);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return Conflict(ex.Message);
+        }
+    }
+
     [HttpDelete("{id}")]
     public async Task<ActionResult> DeleteMovie(int id)
     {

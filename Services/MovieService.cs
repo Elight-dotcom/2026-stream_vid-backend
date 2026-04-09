@@ -65,6 +65,26 @@ public class MovieService : IMovieService
         };
     }
 
+    public async Task<GetMovieDto> UpdateMovie(int id, NewMovieDto updatedMovie)
+    {
+        var movie = await _context.Movies.FindAsync(id);
+        if (movie == null) throw new KeyNotFoundException("Movie not found");
+
+        movie.Name = updatedMovie.Name;
+        movie.FilePath = updatedMovie.FilePath;
+        movie.TmdbId = updatedMovie.TmdbId;
+
+        await _context.SaveChangesAsync();
+
+        return new GetMovieDto
+        {
+            Id = movie.Id,
+            Name = movie.Name,
+            FilePath = movie.FilePath,
+            TmdbId = movie.TmdbId
+        };
+    }
+
     public async Task<bool> DeleteMovie(int id)
     {
         var movie = await _context.Movies.FindAsync(id);
