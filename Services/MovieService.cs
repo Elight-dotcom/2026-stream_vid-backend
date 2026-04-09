@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using StreamVid.Data;
 using StreamVid.DTOs;
@@ -93,5 +94,23 @@ public class MovieService : IMovieService
         _context.Movies.Remove(movie);
         await _context.SaveChangesAsync();
         return true;
+    }
+
+    public async Task<IActionResult> StreamVideo(int id)
+    {
+        var movie = await _context.Movies.FindAsync(id);
+        if (movie == null) return new NotFoundResult();
+
+        if (!System.IO.File.Exists(movie.FilePath)) return new NotFoundResult();
+
+        // Tentukan Content Type secara dinamis (opsional tapi bagus)
+        var contentType = "video/mp4";
+
+        // PhysicalFileResult mendukung 'EnableRangeProcessing' secara native
+        return new PhysicalFileResult(movie.FilePath, contentType)
+        {
+            EnableRangeProcessing = true, // KUNCI UTAMA: Agar TV bisa seek/fast forward
+            FileDownloadName = Path.GetFileName(movie.FilePath)
+        };
     }
 }

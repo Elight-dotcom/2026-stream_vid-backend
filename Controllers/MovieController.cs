@@ -77,4 +77,10 @@ public class MovieController : ControllerBase
         }
         return NoContent();
     }
+
+    [HttpGet("{id}/stream")]
+    public async Task<IActionResult> StreamVideo(int id)
+    {
+        return await _movieService.StreamVideo(id);
+    }
 }
